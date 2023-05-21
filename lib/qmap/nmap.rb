@@ -1,46 +1,62 @@
-module Qmap
-class Application
-module Utilities
+require 'tmpdir'
+require 'nmap/command'
+require 'nmap/xml'
 
-  DEFAULT_NMAP_OPTIONS = {
+require_relative 'core_ext/array'
+
+module Qmap
+module NMap
+
+  DEFAULT_OPTIONS = {
     'output_normal' => '/dev/null',
     'quiet'         => true
   }
 
-  def group_hosts( targets, chunks )
-    return @host_groups if @host_groups
+  PING_REPORT = "#{Dir.tmpdir}/nmap-ping-#{Process.pid}.xml"
+  SCAN_REPORT = "#{Dir.tmpdir}/nmap-scan-#{Process.pid}.xml"
 
-    nmap_run targets:     targets,
-             ping:       true,
-             output_xml: PING_REPORT
-
-    @host_groups =
-      hosts_from_xml( PING_REPORT ).chunk( chunks ).reject { |chunk| chunk.empty? }
+  at_exit do
+    FileUtils.rm_f PING_REPORT
+    FileUtils.rm_f SCAN_REPORT
   end
 
-  def scan( options )
-    nmap_run options.merge( output_xml: SCAN_REPORT )
-    report report_from_xml( SCAN_REPORT )
+  def run( options )
+    _run options.merge( output_xml: SCAN_REPORT )
+    report_from_xml( SCAN_REPORT )
   end
 
-  def merge_report_data( report, to_merge )
-    report['hosts'].merge! to_merge['hosts']
+  def group( targets, chunks )
+    _run targets:    targets,
+        ping:       true,
+        output_xml: PING_REPORT
+
+    hosts_from_xml( PING_REPORT ).chunk( chunks ).reject { |chunk| chunk.empty? }
   end
 
-  def set_default_nmap_options( nmap )
-    set_nmap_options( nmap, DEFAULT_NMAP_OPTIONS )
+  def merge( data )
+    report = { 'hosts' => {} }
+    data.each do |d|
+      report['hosts'].merge! d['hosts']
+    end
+    report
   end
 
-  def set_nmap_options( nmap, options )
+  private
+
+  def set_default_options( nmap )
+    set_options( nmap, DEFAULT_OPTIONS )
+  end
+
+  def set_options( nmap, options )
     options.each do |k, v|
       nmap.send "#{k}=", v
     end
   end
 
-  def nmap_run( options = {}, &block )
+  def _run( options = {}, &block )
     Nmap::Command.run do |nmap|
-      set_default_nmap_options nmap
-      set_nmap_options nmap, options
+      set_default_options nmap
+      set_options nmap, options
       block.call nmap if block_given?
     end
   end
@@ -60,18 +76,18 @@ module Utilities
     Nmap::XML.open( xml ) do |xml|
       xml.each_host do |host|
         report_data['hosts'] ||= {}
-        report_data['hosts'][host.ip] = nmap_host_to_hash( host )
+        report_data['hosts'][host.ip] = host_to_hash( host )
 
         report_data['hosts'][host.ip]['ports'] = {}
         host.each_port do |port|
-          report_data['hosts'][host.ip]['ports'][port.number] = nmap_port_to_hash( port )
+          report_data['hosts'][host.ip]['ports'][port.number] = port_to_hash( port )
         end
       end
     end
     report_data
   end
 
-  def nmap_host_to_hash( host )
+  def host_to_hash( host )
     h = {}
     %w(start_time end_time status addresses mac vendor ipv4 ipv6 hostname hostnames os uptime).each do |k|
       h[k] = host.send( k )
@@ -90,7 +106,7 @@ module Utilities
     h
   end
 
-  def nmap_port_to_hash( port )
+  def port_to_hash( port )
     h = {}
 
     %w(protocol state reason reason_ttl).each do |k|
@@ -109,6 +125,7 @@ module Utilities
     h
   end
 
-end
+  extend self
+
 end
 end

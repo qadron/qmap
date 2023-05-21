@@ -1,26 +1,12 @@
 require 'cuboid'
 require 'json'
-require 'tmpdir'
-require 'nmap/command'
-require 'nmap/xml'
-
-require_relative 'core_ext/array'
+require 'qmap/nmap'
 
 module Qmap
   class Application < Cuboid::Application
-    require 'qmap/application/utilities'
-    include Utilities
 
     validate_options_with :validate_options
     serialize_with JSON
-
-    PING_REPORT = "#{Dir.tmpdir}/nmap-ping-#{Process.pid}.xml"
-    SCAN_REPORT = "#{Dir.tmpdir}/nmap-scan-#{Process.pid}.xml"
-
-    at_exit do
-      FileUtils.rm_f PING_REPORT
-      FileUtils.rm_f SCAN_REPORT
-    end
 
     def run
       if !Cuboid::Options.agent.url
@@ -32,14 +18,14 @@ module Qmap
         @options.delete 'ping'
         @options.delete 'max_instances'
 
-        scan( @options )
+        report NMap.run( @options )
 
       # We're the ping Instance, check for on-line hosts and distribute them to scanners.
       else
         agent = Processes::Agents.connect( Cuboid::Options.agent.url )
 
         scanners = []
-        group_hosts( @options['targets'], @options['max_instances'] ).each do |group|
+        NMap.group( @options['targets'], @options['max_instances'] ).each do |group|
           scanner_info = agent.spawn
 
           # TODO: Re-balance distribution.
@@ -73,22 +59,22 @@ module Qmap
     end
 
     def poll!( scanners )
-      raktr       = Raktr.global
-      report_data = { 'hosts' => {} }
-      done_q      = Queue.new
+      raktr   = Raktr.global
+      data    = []
+      done_q  = Queue.new
 
       raktr.at_interval 1 do |task|
         if scanners.empty?
           task.done
 
-          report report_data
+          report NMap.merge( data )
           done_q << nil
         end
 
         raktr.create_iterator( scanners ).each do |scanner|
           next if scanner.status != :done
 
-          merge_report_data report_data, scanner.generate_report.data
+          data << scanner.generate_report.data
 
           scanners.delete scanner
           scanner.shutdown {}
