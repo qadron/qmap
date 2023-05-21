@@ -6,6 +6,9 @@ QMap is a distributed network mapper/security scanner backed by:
 * [nmap](https://nmap.org/) for the scanning engine.
 * [ruby-nmap](https://github.com/postmodern/ruby-nmap) for the Ruby middleware.
 
+Its basic function is to distribute the scanning of IP ranges across multiple machines and thus parallelize an otherwise 
+quite time consuming task.
+
 ## Installation
 
 Install the gem by executing:
