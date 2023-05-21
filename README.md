@@ -1,6 +1,6 @@
 # Qmap
 
-QMap is a distributed network mapper backed by:
+QMap is a distributed network mapper/security scanner backed by:
 
 * [Cuboid](https://github.com/qadron/cuboid) for the distributed architecture.
 * [nmap](https://nmap.org/) for the scanning engine.
