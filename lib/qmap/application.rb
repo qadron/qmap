@@ -21,6 +21,10 @@ module Qmap
     end
 
     def run
+      if !Cuboid::Options.agent.url
+        fail RuntimeError, 'Missing Agent!'
+      end
+
       # We're not the ping Instance, run a proper scan.
       if @options['ping'] == false
         @options.delete 'ping'
@@ -68,7 +72,7 @@ module Qmap
 
     def poll!( scanners )
       raktr       = Raktr.global
-      report_data = {}
+      report_data = { 'hosts' => {} }
       done_q      = Queue.new
 
       raktr.at_interval 1 do |task|
@@ -82,7 +86,8 @@ module Qmap
         raktr.create_iterator( scanners ).each do |scanner|
           next if scanner.status != :done
 
-          report_data.merge! scanner.generate_report.data
+          merge_report_data report_data, scanner.generate_report.data
+
           scanners.delete scanner
           scanner.shutdown {}
         end
@@ -93,6 +98,10 @@ module Qmap
 
     def agent
       @agent ||= Processes::Agents.connect( Cuboid::Options.agent.url )
+    end
+
+    def merge_report_data( report, to_merge )
+      report['hosts'].merge! to_merge['hosts']
     end
 
     def ping
@@ -123,21 +132,57 @@ module Qmap
       report_data = {}
       Nmap::XML.open( SCAN_REPORT ) do |xml|
         xml.each_host do |host|
-          report_data[host.ip] ||= {}
+          report_data['hosts'] ||= {}
+          report_data['hosts'][host.ip] = host_data( host )
 
+          report_data['hosts'][host.ip]['ports'] = {}
           host.each_port do |port|
-            report_data[host.ip][port.number] ||= {}
-            %w(protocol state).each do |k|
-              report_data[host.ip][port.number][k] = port.send( k )
-            end
-
-            report_data[host.ip][port.number]['service'] = port.service.to_s
+            report_data['hosts'][host.ip]['ports'][port.number] = port_data( port )
           end
         end
       end
 
       report report_data
     end
+
+    def host_data( host )
+      h = {}
+      %w(start_time end_time status addresses mac vendor ipv4 ipv6 hostname hostnames os uptime).each do |k|
+        h[k] = host.send( k )
+      end
+
+      if host.host_script
+        h['scripts'] = {}
+        host.host_script.scripts.each do |name, script|
+          h['scripts'][name] = {
+            output: script.output,
+            data:   script.data
+          }
+        end
+      end
+
+      h
+    end
+
+    def port_data( port )
+      h = {}
+
+      %w(protocol state reason reason_ttl).each do |k|
+        h[k] = port.send( k )
+      end
+      h['service'] = port.service.to_s
+
+      h['scripts'] ||= {}
+      port.scripts.each do |name, script|
+        h['scripts'][name] = {
+          output: script.output,
+          data:   script.data
+        }
+      end
+
+      h
+    end
+
 
   end
 end

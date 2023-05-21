@@ -11,9 +11,10 @@ at_exit { qmap.shutdown }
 
 # Run a distributed scan.
 qmap.run(
-  targets:       ['192.168.1.*'],
-  connect_scan:  true,
-  service_scan:  true,
+  targets:        ['192.168.1.*'],
+  connect_scan:   true,
+  service_scan:   true,
+  default_script: true,
 
   # Split on-line hosts into groups of 5 at a maximum and use one Instance to scan each group.
   max_instances: 5
