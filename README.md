@@ -19,3 +19,7 @@ See `examples/` directory.
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/qadron/qmap.
+
+## Funding
+
+QMap is a [Qadron](https://github.com/qadron/) project and as such funded by [Ecsypno Single Member P.C.](https://ecsypno.com).
