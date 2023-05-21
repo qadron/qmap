@@ -1,88 +1,79 @@
 require 'cuboid'
 require 'json'
+
+require 'qmap'
 require 'qmap/nmap'
 
 module Qmap
   class Application < Cuboid::Application
+    require 'qmap/application/scheduler'
+
+    class Error < Qmap::Error; end
 
     validate_options_with :validate_options
     serialize_with JSON
 
+    instance_service_for :scheduler, Scheduler
+
     def run
       options = @options.dup
 
-      # We're not the ping Instance, run a proper scan.
-      if options['worker']
-        options.delete 'worker'
+      # We have a master so we're not the scheduler, run the payload.
+      if (master_info = options.delete( 'master' ))
+        report_data = native_app.run( options )
 
-        report NMap.run( options )
+        master = Processes::Instances.connect( master_info['url'], master_info['token'] )
+        master.scheduler.report report_data, Cuboid::Options.rpc.url
 
-      # We're the ping Instance, check for on-line hosts and distribute them to scanners.
+      # We're the scheduler Instance.
       else
-        agent = Processes::Agents.connect( Cuboid::Options.agent.url )
-
-        scanners = []
-        NMap.group( options.delete('targets'), options.delete('max_instances') ).each do |group|
-          scanner_info = agent.spawn
+        native_app.group( options.delete('targets'), options.delete('max_instances') ).each do |group|
+          worker = self.scheduler.get_worker
 
           # TODO: Re-balance distribution.
-          if !scanner_info
-            $stderr.puts "No more available slots for scanners."
-            break
+          if !worker
+            $stderr.puts 'Could not get worker.'
+            next
           end
 
-          scanner = self.class.connect( scanner_info )
-          scanner.run options.merge( targets: group, worker: true )
-          scanners << scanner
+          worker.run options.merge(
+            targets: group,
+            master: {
+              url:   Cuboid::Options.rpc.url,
+              token: Cuboid::Options.datastore.token
+            }
+          )
         end
 
-        poll!( scanners )
+        self.scheduler.wait
       end
+    end
+
+    def report( data )
+      super native_app.merge( data )
     end
 
     private
 
     def validate_options( options )
       if !Cuboid::Options.agent.url
-        fail Qmap::Error, 'Missing Agent!'
+        fail Error, 'Missing Agent!'
       end
 
       if !options.include? 'targets'
-        fail Qmap::Error, 'Options: Missing :targets'
+        fail Error, 'Options: Missing :targets'
       end
 
-      if !options['worker'] && !options.include?( 'max_instances' )
-        fail Qmap::Error, 'Options: Missing :max_instances'
+      if !options['master'] && !options.include?( 'max_instances' )
+        fail Error, 'Options: Missing :max_instances'
       end
 
       @options = options
       true
     end
 
-    def poll!( scanners )
-      raktr   = Raktr.global
-      data    = []
-      done_q  = Queue.new
-
-      raktr.at_interval 1 do |task|
-        if scanners.empty?
-          task.done
-
-          report NMap.merge( data )
-          done_q << nil
-        end
-
-        raktr.create_iterator( scanners ).each do |scanner|
-          next if scanner.status != :done
-
-          data << scanner.generate_report.data
-
-          scanners.delete scanner
-          scanner.shutdown {}
-        end
-      end
-
-      done_q.pop
+    def native_app
+      NMap
     end
 
   end

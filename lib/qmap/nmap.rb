@@ -90,7 +90,14 @@ module NMap
   def host_to_hash( host )
     h = {}
     %w(start_time end_time status addresses mac vendor ipv4 ipv6 hostname hostnames os uptime).each do |k|
-      h[k] = host.send( k )
+      v = host.send( k )
+      next if !v
+
+      if v.is_a? Array
+        h[k] = v.map(&:to_s)
+      else
+        h[k] = v.to_s
+      end
     end
 
     if host.host_script
