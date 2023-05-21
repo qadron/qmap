@@ -13,19 +13,20 @@ module Qmap
         fail RuntimeError, 'Missing Agent!'
       end
 
-      # We're not the ping Instance, run a proper scan.
-      if @options['ping'] == false
-        @options.delete 'ping'
-        @options.delete 'max_instances'
+      options = @options.dup
 
-        report NMap.run( @options )
+      # We're not the ping Instance, run a proper scan.
+      if options['worker']
+        options.delete 'worker'
+
+        report NMap.run( options )
 
       # We're the ping Instance, check for on-line hosts and distribute them to scanners.
       else
         agent = Processes::Agents.connect( Cuboid::Options.agent.url )
 
         scanners = []
-        NMap.group( @options['targets'], @options['max_instances'] ).each do |group|
+        NMap.group( options.delete('targets'), options.delete('max_instances') ).each do |group|
           scanner_info = agent.spawn
 
           # TODO: Re-balance distribution.
@@ -35,7 +36,7 @@ module Qmap
           end
 
           scanner = self.class.connect( scanner_info )
-          scanner.run options.merge( targets: group, ping: false )
+          scanner.run options.merge( targets: group, worker: true )
           scanners << scanner
         end
 
@@ -50,7 +51,7 @@ module Qmap
         fail ArgumentError, 'Options: Missing :targets'
       end
 
-      if !options.include? 'max_instances'
+      if !options['worker'] && !options.include?( 'max_instances' )
         fail ArgumentError, 'Options: Missing :max_instances'
       end
 
