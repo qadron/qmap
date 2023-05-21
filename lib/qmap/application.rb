@@ -8,17 +8,14 @@ require_relative 'core_ext/array'
 
 module Qmap
   class Application < Cuboid::Application
+    require 'qmap/application/utilities'
+    include Utilities
 
     validate_options_with :validate_options
     serialize_with JSON
 
     PING_REPORT = "#{Dir.tmpdir}/nmap-ping-#{Process.pid}.xml"
     SCAN_REPORT = "#{Dir.tmpdir}/nmap-scan-#{Process.pid}.xml"
-
-    DEFAULT_OPTIONS = {
-      'output_normal' => '/dev/null',
-      'quiet'         => true
-    }
 
     at_exit do
       FileUtils.rm_f PING_REPORT
@@ -103,99 +100,18 @@ module Qmap
       @agent ||= Processes::Agents.connect( Cuboid::Options.agent.url )
     end
 
-    def merge_report_data( report, to_merge )
-      report['hosts'].merge! to_merge['hosts']
-    end
-
-    def set_defaults( nmap )
-      DEFAULT_OPTIONS.each do |k, v|
-        nmap.send( "#{k}=", v )
-      end
-    end
-
     def ping
-      Nmap::Command.run do |nmap|
-        set_defaults nmap
+      nmap_run targets:    @options['targets'],
+                ping:       true,
+                output_xml: PING_REPORT
 
-        nmap.targets    = @options['targets']
-        nmap.ping       = true
-        nmap.output_xml = PING_REPORT
-      end
-
-      hosts = []
-      Nmap::XML.open( PING_REPORT ) do |xml|
-        xml.each_host do |host|
-          hosts << host.ip
-        end
-      end
-
-      hosts.chunk( @options['max_instances'] ).reject { |chunk| chunk.empty? }
+      hosts_from_xml( PING_REPORT ).chunk( @options['max_instances'] ).reject { |chunk| chunk.empty? }
     end
 
     def scan( options )
-      Nmap::Command.run do |nmap|
-        set_defaults nmap
-
-        options.each do |k, v|
-          nmap.send "#{k}=", v
-        end
-        nmap.output_xml = SCAN_REPORT
-      end
-
-      report_data = {}
-      Nmap::XML.open( SCAN_REPORT ) do |xml|
-        xml.each_host do |host|
-          report_data['hosts'] ||= {}
-          report_data['hosts'][host.ip] = host_data( host )
-
-          report_data['hosts'][host.ip]['ports'] = {}
-          host.each_port do |port|
-            report_data['hosts'][host.ip]['ports'][port.number] = port_data( port )
-          end
-        end
-      end
-
-      report report_data
+      nmap_run options.merge( output_xml: SCAN_REPORT )
+      report report_from_xml( SCAN_REPORT )
     end
-
-    def host_data( host )
-      h = {}
-      %w(start_time end_time status addresses mac vendor ipv4 ipv6 hostname hostnames os uptime).each do |k|
-        h[k] = host.send( k )
-      end
-
-      if host.host_script
-        h['scripts'] = {}
-        host.host_script.scripts.each do |name, script|
-          h['scripts'][name] = {
-            output: script.output,
-            data:   script.data
-          }
-        end
-      end
-
-      h
-    end
-
-    def port_data( port )
-      h = {}
-
-      %w(protocol state reason reason_ttl).each do |k|
-        h[k] = port.send( k )
-      end
-      h['service'] = port.service.to_s
-
-      h['scripts'] ||= {}
-      port.scripts.each do |name, script|
-        h['scripts'][name] = {
-          output: script.output,
-          data:   script.data
-        }
-      end
-
-      h
-    end
-
 
   end
 end
