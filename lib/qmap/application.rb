@@ -15,6 +15,11 @@ module Qmap
     PING_REPORT = "#{Dir.tmpdir}/nmap-ping-#{Process.pid}.xml"
     SCAN_REPORT = "#{Dir.tmpdir}/nmap-scan-#{Process.pid}.xml"
 
+    DEFAULT_OPTIONS = {
+      'output_normal' => '/dev/null',
+      'quiet'         => true
+    }
+
     at_exit do
       FileUtils.rm_f PING_REPORT
       FileUtils.rm_f SCAN_REPORT
@@ -64,8 +69,6 @@ module Qmap
         fail ArgumentError, 'Options: Missing :max_instances'
       end
 
-      options['output_normal'] = '/dev/null'
-
       @options = options
       true
     end
@@ -104,8 +107,16 @@ module Qmap
       report['hosts'].merge! to_merge['hosts']
     end
 
+    def set_defaults( nmap )
+      DEFAULT_OPTIONS.each do |k, v|
+        nmap.send( "#{k}=", v )
+      end
+    end
+
     def ping
-      Nmap::Command.capture do |nmap|
+      Nmap::Command.run do |nmap|
+        set_defaults nmap
+
         nmap.targets    = @options['targets']
         nmap.ping       = true
         nmap.output_xml = PING_REPORT
@@ -122,7 +133,9 @@ module Qmap
     end
 
     def scan( options )
-      Nmap::Command.capture do |nmap|
+      Nmap::Command.run do |nmap|
+        set_defaults nmap
+
         options.each do |k, v|
           nmap.send "#{k}=", v
         end
