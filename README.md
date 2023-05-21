@@ -11,9 +11,9 @@ quite time consuming task.
 
 ## Installation
 
-Install the gem by executing:
-
-    $ gem install qmap
+    $ git clone git@github.com:qadron/qmap.git
+    $ cd qmap
+    $ bundle install
 
 ## Usage
 
