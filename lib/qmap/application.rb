@@ -1,4 +1,5 @@
 require 'cuboid'
+require 'json'
 require 'tmpdir'
 require 'nmap/command'
 require 'nmap/xml'
@@ -9,6 +10,7 @@ module Qmap
   class Application < Cuboid::Application
 
     validate_options_with :validate_options
+    serialize_with JSON
 
     PING_REPORT = "#{Dir.tmpdir}/nmap-ping-#{Process.pid}.xml"
     SCAN_REPORT = "#{Dir.tmpdir}/nmap-scan-#{Process.pid}.xml"
