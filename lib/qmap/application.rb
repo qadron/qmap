@@ -105,7 +105,7 @@ module Qmap
     end
 
     def ping
-      Nmap::Command.run do |nmap|
+      Nmap::Command.capture do |nmap|
         nmap.targets    = @options['targets']
         nmap.ping       = true
         nmap.output_xml = PING_REPORT
@@ -122,7 +122,7 @@ module Qmap
     end
 
     def scan( options )
-      Nmap::Command.run do |nmap|
+      Nmap::Command.capture do |nmap|
         options.each do |k, v|
           nmap.send "#{k}=", v
         end
