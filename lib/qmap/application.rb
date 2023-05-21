@@ -9,10 +9,6 @@ module Qmap
     serialize_with JSON
 
     def run
-      if !Cuboid::Options.agent.url
-        fail RuntimeError, 'Missing Agent!'
-      end
-
       options = @options.dup
 
       # We're not the ping Instance, run a proper scan.
@@ -47,12 +43,16 @@ module Qmap
     private
 
     def validate_options( options )
+      if !Cuboid::Options.agent.url
+        fail Qmap::Error, 'Missing Agent!'
+      end
+
       if !options.include? 'targets'
-        fail ArgumentError, 'Options: Missing :targets'
+        fail Qmap::Error, 'Options: Missing :targets'
       end
 
       if !options['worker'] && !options.include?( 'max_instances' )
-        fail ArgumentError, 'Options: Missing :max_instances'
+        fail Qmap::Error, 'Options: Missing :max_instances'
       end
 
       @options = options
