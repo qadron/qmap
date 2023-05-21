@@ -1,5 +1,5 @@
 require 'pp'
-require 'qmap/application'
+require 'qmap'
 
 # Spawn a QMap Agent as a daemon.
 qmap_agent = Qmap::Application.spawn( :agent, daemonize: true )
