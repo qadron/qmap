@@ -1,0 +1,189 @@
+{
+  "hosts": {
+    "192.168.1.1": {
+      "start_time": "2023-05-21 19:30:39 +0300",
+      "end_time": "2023-05-21 19:31:20 +0300",
+      "status": "up",
+      "addresses": [
+        "192.168.1.1"
+      ],
+      "mac": null,
+      "vendor": null,
+      "ipv4": "192.168.1.1",
+      "ipv6": null,
+      "hostname": "mywebui.net",
+      "hostnames": [
+        "mywebui.net"
+      ],
+      "os": null,
+      "uptime": null,
+      "ports": {
+        "53": {
+          "protocol": "tcp",
+          "state": "open",
+          "reason": "syn-ack",
+          "reason_ttl": "syn-ack",
+          "service": "dnsmasq 2.85",
+          "scripts": {
+            "dns-nsid": {
+              "output": "\n  bind.version: dnsmasq-2.85",
+              "data": {
+                "bind.version": "dnsmasq-2.85"
+              }
+            }
+          }
+        },
+        "80": {
+          "protocol": "tcp",
+          "state": "open",
+          "reason": "syn-ack",
+          "reason_ttl": "syn-ack",
+          "service": "http",
+          "scripts": {
+            "http-server-header": {
+              "output": "httpd/2.7 (Netgear; D86)",
+              "data": [
+                "httpd/2.7 (Netgear; D86)"
+              ]
+            },
+            "http-title": {
+              "output": "NETGEAR\nRequested resource was http://mywebui.net/index.html?sessionId=00000005%2DqJnmUh51Zh2tSmWlMkdD4dXOUxF7xn3",
+              "data": {
+                "title": "NETGEAR",
+                "redirect_url": "http://mywebui.net/index.html?sessionId=00000005%2DqJnmUh51Zh2tSmWlMkdD4dXOUxF7xn3"
+              }
+            }
+          }
+        },
+        "5510": {
+          "protocol": "tcp",
+          "state": "filtered",
+          "reason": "no-response",
+          "reason_ttl": "no-response",
+          "service": "secureidprop",
+          "scripts": {
+          }
+        }
+      }
+    },
+    "192.168.1.43": {
+      "start_time": "2023-05-21 19:30:40 +0300",
+      "end_time": "2023-05-21 19:33:15 +0300",
+      "status": "up",
+      "addresses": [
+        "192.168.1.43"
+      ],
+      "mac": null,
+      "vendor": null,
+      "ipv4": "192.168.1.43",
+      "ipv6": null,
+      "hostname": "deco_X60.net",
+      "hostnames": [
+        "deco_X60.net"
+      ],
+      "os": null,
+      "uptime": null,
+      "ports": {
+        "80": {
+          "protocol": "tcp",
+          "state": "open",
+          "reason": "syn-ack",
+          "reason_ttl": "syn-ack",
+          "service": "http",
+          "scripts": {
+            "fingerprint-strings": {
+              "output": "\n  FourOhFourRequest: \n    HTTP/1.0 404 Not Found\n    Connection: close\n    Content-Type: text/html\n    <h1>Not Found</h1>The requested URL /nice%20ports%2C/Tri%6Eity.txt%2ebak was not found on this server.\n  GetRequest, HTTPOptions: \n    HTTP/1.0 200 OK\n    Connection: close\n    ETag: \"86b-110-5ce64ee5\"\n    Last-Modified: Thu, 23 May 2019 07:42:29 GMT\n    Date: Sun, 21 May 2023 16:30:46 GMT\n    X-Frame-Options: deny\n    Content-Security-Policy: frame-ancestors 'none'\n    Content-Type: text/html\n    Content-Length: 272\n    <?xml version=\"1.0\" encoding=\"utf-8\"?>\n    <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n    <html xmlns=\"http://www.w3.org/1999/xhtml\">\n    <head>\n    <meta http-equiv=\"refresh\" content=\"0; URL=/webpages/index.html\" />\n    </head>\n    </html>\n  Help: \n    HTTP/0.9 400 Bad Request\n    Connection: Keep-Alive\n    Keep-Alive: timeout=20\n    Content-Type: text/html\n    <h1>Bad Request</h1>\n  RTSPRequest: \n    HTTP/1.0 400 Bad Request\n    Connection: Keep-Alive\n    Keep-Alive: timeout=20\n    Content-Type: text/html\n    <h1>Bad Request</h1>",
+              "data": {
+                "FourOhFourRequest": "\n    HTTP/1.0 404 Not Found\n    Connection: close\n    Content-Type: text/html\n    <h1>Not Found</h1>The requested URL /nice%20ports%2C/Tri%6Eity.txt%2ebak was not found on this server.",
+                "GetRequest, HTTPOptions": "\n    HTTP/1.0 200 OK\n    Connection: close\n    ETag: \"86b-110-5ce64ee5\"\n    Last-Modified: Thu, 23 May 2019 07:42:29 GMT\n    Date: Sun, 21 May 2023 16:30:46 GMT\n    X-Frame-Options: deny\n    Content-Security-Policy: frame-ancestors 'none'\n    Content-Type: text/html\n    Content-Length: 272\n    <?xml version=\"1.0\" encoding=\"utf-8\"?>\n    <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n    <html xmlns=\"http://www.w3.org/1999/xhtml\">\n    <head>\n    <meta http-equiv=\"refresh\" content=\"0; URL=/webpages/index.html\" />\n    </head>\n    </html>",
+                "Help": "\n    HTTP/0.9 400 Bad Request\n    Connection: Keep-Alive\n    Keep-Alive: timeout=20\n    Content-Type: text/html\n    <h1>Bad Request</h1>",
+                "RTSPRequest": "\n    HTTP/1.0 400 Bad Request\n    Connection: Keep-Alive\n    Keep-Alive: timeout=20\n    Content-Type: text/html\n    <h1>Bad Request</h1>"
+              }
+            },
+            "http-title": {
+              "output": "Site doesn't have a title (text/html).",
+              "data": null
+            }
+          }
+        },
+        "443": {
+          "protocol": "tcp",
+          "state": "open",
+          "reason": "syn-ack",
+          "reason_ttl": "syn-ack",
+          "service": "https",
+          "scripts": {
+            "http-title": {
+              "output": "Site doesn't have a title (text/html).",
+              "data": null
+            },
+            "ssl-cert": {
+              "output": "Subject: commonName=tplinkdeco.net/countryName=CN\nNot valid before: 2010-01-01T00:00:00\nNot valid after:  2030-12-31T00:00:00",
+              "data": {
+                "subject": {
+                  "countryName": "CN",
+                  "commonName": "tplinkdeco.net"
+                },
+                "issuer": {
+                  "countryName": "CN",
+                  "commonName": "tplinkdeco.net"
+                },
+                "pubkey": {
+                  "exponent": "BIGNUM: 0x5574815bd108",
+                  "bits": "2048",
+                  "modulus": "BIGNUM: 0x5574815bd148",
+                  "type": "rsa"
+                },
+                "extensions": [
+                  {
+                    "name": "X509v3 Basic Constraints",
+                    "value": "CA:FALSE"
+                  },
+                  {
+                    "name": "Netscape Comment",
+                    "value": "OpenSSL Generated Certificate"
+                  },
+                  {
+                    "name": "X509v3 Subject Key Identifier",
+                    "value": "9D:23:AE:93:2D:A9:BB:3D:F1:4B:1E:5B:23:C5:86:30:C9:2E:B3:23"
+                  },
+                  {
+                    "name": "X509v3 Authority Key Identifier",
+                    "value": "11:D9:C7:7D:04:5B:F3:B3:B7:2A:3C:02:56:88:75:63:48:A4:47:BB"
+                  }
+                ],
+                "validity": {
+                  "notAfter": "2030-12-31T00:00:00",
+                  "notBefore": "2010-01-01T00:00:00"
+                }
+              }
+            },
+            "ssl-date": {
+              "output": "TLS randomness does not represent time",
+              "data": null
+            }
+          }
+        },
+        "1900": {
+          "protocol": "tcp",
+          "state": "open",
+          "reason": "syn-ack",
+          "reason_ttl": "syn-ack",
+          "service": "MiniUPnP 1.8",
+          "scripts": {
+            "fingerprint-strings": {
+              "output": "\n  FourOhFourRequest, GetRequest: \n    HTTP/1.0 404 Not Found\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 134\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>404 Not Found</TITLE></HEAD><BODY><H1>Not Found</H1>The requested URL was not found on this server.</BODY></HTML>\n  GenericLines: \n    501 Not Implemented\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 149\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>501 Not Implemented</TITLE></HEAD><BODY><H1>Not Implemented</H1>The HTTP Method is not implemented by this server.</BODY></HTML>\n  HTTPOptions: \n    HTTP/1.0 501 Not Implemented\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 149\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>501 Not Implemented</TITLE></HEAD><BODY><H1>Not Implemented</H1>The HTTP Method is not implemented by this server.</BODY></HTML>\n  RTSPRequest: \n    RTSP/1.0 501 Not Implemented\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 149\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>501 Not Implemented</TITLE></HEAD><BODY><H1>Not Implemented</H1>The HTTP Method is not implemented by this server.</BODY></HTML>\n  SIPOptions: \n    SIP/2.0 501 Not Implemented\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 149\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>501 Not Implemented</TITLE></HEAD><BODY><H1>Not Implemented</H1>The HTTP Method is not implemented by this server.</BODY></HTML>",
+              "data": {
+                "FourOhFourRequest, GetRequest": "\n    HTTP/1.0 404 Not Found\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 134\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>404 Not Found</TITLE></HEAD><BODY><H1>Not Found</H1>The requested URL was not found on this server.</BODY></HTML>",
+                "GenericLines": "\n    501 Not Implemented\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 149\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>501 Not Implemented</TITLE></HEAD><BODY><H1>Not Implemented</H1>The HTTP Method is not implemented by this server.</BODY></HTML>",
+                "HTTPOptions": "\n    HTTP/1.0 501 Not Implemented\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 149\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>501 Not Implemented</TITLE></HEAD><BODY><H1>Not Implemented</H1>The HTTP Method is not implemented by this server.</BODY></HTML>",
+                "RTSPRequest": "\n    RTSP/1.0 501 Not Implemented\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 149\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>501 Not Implemented</TITLE></HEAD><BODY><H1>Not Implemented</H1>The HTTP Method is not implemented by this server.</BODY></HTML>",
+                "SIPOptions": "\n    SIP/2.0 501 Not Implemented\n    Content-Type: text/html\n    Connection: close\n    Content-Length: 149\n    Server: TP-LINK/TP-LINK UPnP/1.1 MiniUPnPd/1.8\n    Ext:\n    <HTML><HEAD><TITLE>501 Not Implemented</TITLE></HEAD><BODY><H1>Not Implemented</H1>The HTTP Method is not implemented by this server.</BODY></HTML>"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

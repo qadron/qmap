@@ -24,4 +24,4 @@ qmap.run(
 sleep 1 while qmap.running?
 
 # Hooray!
-pp qmap.generate_report.data
+puts JSON.pretty_generate( qmap.generate_report.data )

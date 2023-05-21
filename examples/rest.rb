@@ -46,8 +46,9 @@ puts '*' * 88
 
 # Get the scan report.
 request :get, "instances/#{instance_id}/report.json"
+
 # Print out the report.
-pp JSON.load( response_data['data'] )
+puts JSON.pretty_generate( JSON.load( response_data['data'] ) )
 
 # Shutdown the Instance.
 request :delete, "instances/#{instance_id}"
