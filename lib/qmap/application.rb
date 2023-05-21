@@ -72,6 +72,12 @@ module Qmap
       true
     end
 
+    # Implements:
+    #   * `.run` -- Worker; executes its payload against `targets`.
+    #   * `.group` -- Splits given `targets` into groups for each worker.
+    #   * `.merge` -- Merges results from multiple workers.
+    #
+    # That's all we need to turn any application into a super version of itself, in this case `nmap`.
     def native_app
       NMap
     end
