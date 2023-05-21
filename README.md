@@ -24,7 +24,7 @@ See the `examples/` directory.
 Qmap can initiate scans from the same machine, but the idea behind it is to use a _Grid_ which transparently load-balances
 and line-aggregates, in order to combine resources and perform a faster scan than one single machine could.
 
-That _Grid_ technology is graciously provided by Cuboid [Cuboid](https://github.com/qadron/cuboid) and can be setup like so:
+That _Grid_ technology is graciously provided by [Cuboid](https://github.com/qadron/cuboid) and can be setup like so:
 
 ```
 $ bundle exec irb
@@ -50,6 +50,10 @@ I, [2023-05-21T19:12:38.998494 #359221]  INFO -- System: Listening on xps:5786
 
 That's a _Grid_ of 2 Qmap _Agents_, both of them available to provide scanner _Instances_ that can be used to parallelize
 network mapping/security scans.
+
+If those 2 machines use a different pipe to the network you wish to scan, the result will be that the network resources
+are going to be in a way combined; or if the scan is too CPU intensive for just one machine, this will split the workload
+amongst the 2.
 
 The cool thing is that it doesn't matter to which you refer for _Instance_ _spawning_, the appropriate one is going to
 be the one providing it.
