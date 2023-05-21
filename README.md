@@ -14,7 +14,7 @@ Install the gem by executing:
 
 ## Usage
 
-See `examples/` directory.
+CLI interface is on its way, for now see the `examples/` directory.
 
 ## Contributing
 
