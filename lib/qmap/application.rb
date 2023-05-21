@@ -36,13 +36,15 @@ module Qmap
 
       # We're the ping Instance, check for on-line hosts and distribute them to scanners.
       else
+        agent = Processes::Agents.connect( Cuboid::Options.agent.url )
+
         scanners = []
-        ping.each do |group|
+        group_hosts( @options['targets'], @options['max_instances'] ).each do |group|
           scanner_info = agent.spawn
 
           # TODO: Re-balance distribution.
           if !scanner_info
-            print_info "No more available slots for scanners."
+            $stderr.puts "No more available slots for scanners."
             break
           end
 
@@ -94,23 +96,6 @@ module Qmap
       end
 
       done_q.pop
-    end
-
-    def agent
-      @agent ||= Processes::Agents.connect( Cuboid::Options.agent.url )
-    end
-
-    def ping
-      nmap_run targets:    @options['targets'],
-                ping:       true,
-                output_xml: PING_REPORT
-
-      hosts_from_xml( PING_REPORT ).chunk( @options['max_instances'] ).reject { |chunk| chunk.empty? }
-    end
-
-    def scan( options )
-      nmap_run options.merge( output_xml: SCAN_REPORT )
-      report report_from_xml( SCAN_REPORT )
     end
 
   end

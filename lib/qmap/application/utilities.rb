@@ -7,6 +7,22 @@ module Utilities
     'quiet'         => true
   }
 
+  def group_hosts( targets, chunks )
+    return @host_groups if @host_groups
+
+    nmap_run targets:     targets,
+             ping:       true,
+             output_xml: PING_REPORT
+
+    @host_groups =
+      hosts_from_xml( PING_REPORT ).chunk( chunks ).reject { |chunk| chunk.empty? }
+  end
+
+  def scan( options )
+    nmap_run options.merge( output_xml: SCAN_REPORT )
+    report report_from_xml( SCAN_REPORT )
+  end
+
   def merge_report_data( report, to_merge )
     report['hosts'].merge! to_merge['hosts']
   end
