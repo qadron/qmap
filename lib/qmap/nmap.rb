@@ -26,11 +26,8 @@ module NMap
   end
 
   def group( targets, chunks )
-    _run targets:    targets,
-        ping:       true,
-        output_xml: PING_REPORT
-
-    hosts_from_xml( PING_REPORT ).chunk( chunks ).reject { |chunk| chunk.empty? }
+    @hosts ||= self.live_hosts( targets )
+    @hosts.chunk( chunks ).reject { |chunk| chunk.empty? }
   end
 
   def merge( data )
@@ -42,6 +39,14 @@ module NMap
   end
 
   private
+
+  def live_hosts( targets )
+    _run targets:    targets,
+         ping:       true,
+         output_xml: PING_REPORT
+
+    hosts_from_xml( PING_REPORT )
+  end
 
   def set_default_options( nmap )
     set_options( nmap, DEFAULT_OPTIONS )

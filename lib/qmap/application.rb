@@ -10,6 +10,12 @@ module Qmap
 
     class Error < Qmap::Error; end
 
+    # 100MB RAM should be more than enough for nmap and ruby,
+    provision_memory 100 * 1024 * 1024
+
+    # 100MB disk space should be more than enough for the temp nmap reports,
+    provision_disk   100 * 1024 * 1024
+
     validate_options_with :validate_options
     serialize_with JSON
 
@@ -27,17 +33,38 @@ module Qmap
 
       # We're the scheduler Instance.
       else
-        native_app.group( options.delete('targets'), options.delete('max_instances') ).each do |group|
-          worker = self.scheduler.get_worker
+        max_instances = options.delete('max_instances')
+        targets       = options.delete('targets')
+        groups        = native_app.group( targets, max_instances )
 
-          # TODO: Re-balance distribution.
-          if !worker
-            $stderr.puts 'Could not get worker.'
-            next
-          end
+        # Workload turned out to be less than our maximum allowed instances.
+        # Don't spawn the max if we don't have to.
+        if groups.size < max_instances
+          instance_num = groups.size
 
+        # Workload distribution turned out as expected.
+        elsif groups.size == max_instances
+          instance_num = max_instances
+
+        # What the hell did just happen1?
+        else
+          fail Error, 'Workload distribution error, uneven grouping!'
+        end
+
+        instance_num.times.each do |i|
+          # Get as many workers as necessary/possible.
+          break unless self.scheduler.get_worker
+        end
+
+        # We couldn't get the workers we were going for, Grid reached its capacity,
+        # re-balance distribution.
+        if self.scheduler.workers.size < groups.size
+          groups = native_app.group( targets, self.scheduler.workers.size )
+        end
+
+        self.scheduler.workers.values.each do |worker|
           worker.run options.merge(
-            targets: group,
+            targets: groups.pop,
             master: {
               url:   Cuboid::Options.rpc.url,
               token: Cuboid::Options.datastore.token

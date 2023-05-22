@@ -18,6 +18,10 @@ class Scheduler
     worker
   end
 
+  def workers
+    @workers ||= {}
+  end
+
   def report( data, url )
     return if !(worker = workers.delete( url ))
 
@@ -35,18 +39,14 @@ class Scheduler
     @done_signal.pop
   end
 
-  private
-
-  def workers
-    @workers ||= {}
+  def agent
+    @agent ||= Processes::Agents.connect( Cuboid::Options.agent.url )
   end
+
+  private
 
   def report_data
     @report_data ||= []
-  end
-
-  def agent
-    @agent ||= Processes::Agents.connect( Cuboid::Options.agent.url )
   end
 
 end
