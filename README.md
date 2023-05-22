@@ -1,3 +1,7 @@
+# Ported to Peplum
+
+For the continuation of this project please see [Peplum::Nmap](https://github.com/peplum/peplum-nmap).
+
 # Qmap
 
 QMap is a distributed network mapper/security scanner backed by:
